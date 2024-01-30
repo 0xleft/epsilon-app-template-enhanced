@@ -31,7 +31,9 @@ namespace std {
     }
 
 	void __throw_bad_alloc() {
+	}
 
+	void __throw_logic_error(char const*) {
 	}
 }
 
@@ -42,7 +44,13 @@ void operator delete(void* ptr, unsigned int size) {
 void* operator new(size_t size) {
 	return malloc(size);
 }
+void* operator new[](size_t size) {
+	return malloc(size);
+}
 void operator delete(void* ptr) {
+	free(ptr);
+}
+void operator delete[](void* ptr) {
 	free(ptr);
 }
 
