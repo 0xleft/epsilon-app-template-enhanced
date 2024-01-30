@@ -152,5 +152,8 @@ static inline uint32_t random() {
 }
 
 #include "eadkpp_extended.h"
+#ifdef INCLUDE_EADKPP_3D
+#include "eadkpp_3d.h"
+#endif
 
 #endif

@@ -1,3 +1,5 @@
+#define INCLUDE_EADKPP_3D
+
 #include <cheats.h>
 #include "display.h"
 #include "eadkpp.h"
