@@ -67,6 +67,11 @@ static void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, Color color
     }
 }
 
+static void drawLine(Point p1, Point p2, Color color)
+{
+    drawLine(p1.x(), p1.y(), p2.x(), p2.y(), color);
+};
+
 static void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, Color color, uint16_t width) {
     // but with width
     for (uint16_t i = 0; i < width; i++) {
