@@ -46,9 +46,14 @@ namespace Display
 
 static void drawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, Color color)
 {
-    if (x + width > Screen::Width || y + height > Screen::Height) return;
+    if (x + width > Screen::Width || y + height > Screen::Height) return; // don draw outside the screen
     eadk_rect_t rect = {x, y, width, height};
     eadk_display_push_rect_uniform(rect, color);
+};
+
+static void drawPoint(Point point, Color color)
+{
+    drawRect(point.x(), point.y(), 1, 1, color);
 };
 
 static void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, Color color)
