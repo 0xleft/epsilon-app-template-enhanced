@@ -5,13 +5,6 @@
 #include "eadkpp.h"
 #include "palette.h"
 
-#include <glm/vec3.hpp> // glm::vec3
-#include <glm/vec4.hpp> // glm::vec4
-#include <glm/mat4x4.hpp> // glm::mat4
-#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
-#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
-#include <glm/ext/scalar_constants.hpp> // glm::pi
-
 #define EADK_APP_NAME "EADK"
 #define EADK_API_LEVEL 0
 
@@ -20,9 +13,63 @@ extern const uint32_t eadk_api_level __attribute__((section(".rodata.eadk_api_le
 
 int main(int argc, char * argv[]) {
 	EADK::Display::clear(Black);
-	glm::mat4 Projection = glm::perspective(glm::pi<float>() * 0.25f, 4.0f / 3.0f, 0.1f, 100.f);
-	if (Projection.length() == 4) {
-		EADK::Timing::msleep(1000);
+
+	// camera
+	glm::vec3 camPos = glm::vec3(0.0f, 0.0f, 4.0f);
+	glm::vec3 camRot = glm::vec3(0.0f, 0.0f, 0.0f);
+	EADK::Graphics::Camera camera(90.0f, 4 / 3, 0.1f, 100.f);
+	camera.setPosition(camPos);
+	camera.setRotation(camRot);
+
+	float time = 0.0f;
+	while (true) {
+		EADK::Display::clear(Black);
+		time += 0.01f;
+
+		EADK::Keyboard::State kbd = EADK::Keyboard::scan();
+		if (kbd.keyDown(EADK::Keyboard::Key::Right)) {
+			camRot.x += 0.01f;
+			camera.setRotation(camRot);
+		}
+		if (kbd.keyDown(EADK::Keyboard::Key::Left)) {
+			camRot.x -= 0.01f;
+			camera.setRotation(camRot);
+		}
+		if (kbd.keyDown(EADK::Keyboard::Key::Down)) {
+			camRot.y += 0.01f;
+			camera.setRotation(camRot);
+		}
+		if (kbd.keyDown(EADK::Keyboard::Key::Up)) {
+			camRot.y -= 0.01f;
+			camera.setRotation(camRot);
+		}
+
+		glm::vec3 p1 = glm::vec3(-1.0f, -1.0f, -1.0f);
+		glm::vec3 p2 = glm::vec3(1.0f, -1.0f, -1.0f);
+		glm::vec3 p3 = glm::vec3(1.0f, 1.0f, -1.0f);
+		glm::vec3 p4 = glm::vec3(-1.0f, 1.0f, -1.0f);
+		glm::vec3 p5 = glm::vec3(-1.0f, -1.0f, 1.0f);
+		glm::vec3 p6 = glm::vec3(1.0f, -1.0f, 1.0f);
+		glm::vec3 p7 = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 p8 = glm::vec3(-1.0f, 1.0f, 1.0f);
+
+		EADK::Display::drawLine(camera.project(p1), camera.project(p2), White);
+		EADK::Display::drawLine(camera.project(p2), camera.project(p3), White);
+		EADK::Display::drawLine(camera.project(p3), camera.project(p4), White);
+		EADK::Display::drawLine(camera.project(p4), camera.project(p1), White);
+		
+		EADK::Display::drawLine(camera.project(p5), camera.project(p6), White);
+		EADK::Display::drawLine(camera.project(p6), camera.project(p7), White);
+		EADK::Display::drawLine(camera.project(p7), camera.project(p8), White);
+		EADK::Display::drawLine(camera.project(p8), camera.project(p5), White);
+
+		EADK::Display::drawLine(camera.project(p1), camera.project(p5), White);
+		EADK::Display::drawLine(camera.project(p2), camera.project(p6), White);
+		EADK::Display::drawLine(camera.project(p3), camera.project(p7), White);
+		EADK::Display::drawLine(camera.project(p4), camera.project(p8), White);
+
+		EADK::Timing::msleep(10);
 	}
+	
 	return 0;
 }

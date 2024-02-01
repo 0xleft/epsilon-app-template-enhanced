@@ -21,22 +21,22 @@ public:
         projectionMatrix = glm::perspective(glm::radians(fov), aspectRatio, near, far);
     }
 
+    glm::mat4 getProjectionMatrix() const {
+        return projectionMatrix;
+    }
+
+    glm::mat4 getViewMatrix() const {
+        return viewMatrix;
+    }
+
     void setPosition(const glm::vec3& position) {
         viewMatrix = glm::lookAt(position, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+        this->position = position;
     }
 
     void setRotation(const glm::vec3& rotation) {
         viewMatrix = glm::lookAt(position, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
-    }
-
-    void rotate(const glm::vec3& delta) {
-        rotation += delta;
-        viewMatrix = glm::lookAt(position, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
-    }
-
-    void move(const glm::vec3& delta) {
-        position += delta;
-        viewMatrix = glm::lookAt(position, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+        this->rotation = rotation;
     }
 
     Point project(const glm::vec3& worldPos) {
