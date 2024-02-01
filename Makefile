@@ -20,7 +20,7 @@ CPPFLAGS += -Wall -Iinclude
 CPPFLAGS += $(shell $(NWLINK) eadk-cflags)
 LDFLAGS = -Wl,--relocatable
 LDFLAGS += -nostartfiles
-LDFLAGS += --specs=nano.specs
+LDFLAGS += --specs=nano.specs -lm -Linclude -l:libglm.a
 
 ifeq ($(LINK_GC),1)
 CPPFLAGS += -fdata-sections -ffunction-sections
@@ -34,6 +34,8 @@ CPPFLAGS += -fwhole-program
 CPPFLAGS += -fvisibility=internal
 LDFLAGS += -flinker-output=nolto-rel
 endif
+
+LDFLAGS_END += -lm
 
 .PHONY: build
 build: $(BUILD_DIR)/nwapp.bin
@@ -49,7 +51,7 @@ $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.nwa
 
 $(BUILD_DIR)/nwapp.nwa: $(call object_for,$(src)) $(BUILD_DIR)/icon.o
 	@echo "LD      $@"
-	$(Q) $(CC) $(CPPFLAGS) $(LDFLAGS) $^ -o $@
+	$(Q) $(CC) $(CPPFLAGS) $(LDFLAGS) $^ $(LDFLAGS_END) -o $@
 
 $(addprefix $(BUILD_DIR)/,%.o): %.cpp | $(BUILD_DIR)
 	@echo "CXX     $^"

@@ -5,6 +5,13 @@
 #include "eadkpp.h"
 #include "palette.h"
 
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/ext/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale
+#include <glm/ext/matrix_clip_space.hpp> // glm::perspective
+#include <glm/ext/scalar_constants.hpp> // glm::pi
+
 #define EADK_APP_NAME "EADK"
 #define EADK_API_LEVEL 0
 
@@ -12,25 +19,10 @@ extern const char eadk_app_name[] __attribute__((section(".rodata.eadk_app_name"
 extern const uint32_t eadk_api_level __attribute__((section(".rodata.eadk_api_level"))) = EADK_API_LEVEL;
 
 int main(int argc, char * argv[]) {
-	EADK::Display::clear(White);
-
-	EADK::Graphics::Vector3 v1(10, 10, 10);
-	EADK::Graphics::Vector3 v2(20, 20, 20);
-	EADK::Graphics::Vector3 v3 = v1 + v2;
-
-	// cam
-	EADK::Graphics::Vector3 camPos(0, 0, 0);
-	EADK::Graphics::Vector3 camRot(0, 0, 0);
-	EADK::Graphics::Camera camera(camPos, camRot, 80, 16/9, 0.1, 1000);
-
-	// draw vertices
-	EADK::Point p1 = camera.project(v1);
-	EADK::Point p2 = camera.project(v2);
-	EADK::Point p3 = camera.project(v3);
-
-	EADK::Display::drawLine(p1, p2, Black);
-	EADK::Display::drawLine(p2, p3, Black);
-	EADK::Display::drawLine(p3, p1, Black);
-
-	EADK::Timing::msleep(1000);
+	EADK::Display::clear(Black);
+	glm::mat4 Projection = glm::perspective(glm::pi<float>() * 0.25f, 4.0f / 3.0f, 0.1f, 100.f);
+	if (Projection.length() == 4) {
+		EADK::Timing::msleep(1000);
+	}
+	return 0;
 }
