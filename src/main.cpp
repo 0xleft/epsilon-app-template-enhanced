@@ -28,21 +28,40 @@ int main(int argc, char * argv[]) {
 
 		EADK::Keyboard::State kbd = EADK::Keyboard::scan();
 		if (kbd.keyDown(EADK::Keyboard::Key::Right)) {
-			camRot.x += 0.01f;
+			camRot.x += 0.1f;
 			camera.setRotation(camRot);
 		}
 		if (kbd.keyDown(EADK::Keyboard::Key::Left)) {
-			camRot.x -= 0.01f;
+			camRot.x -= 0.1f;
 			camera.setRotation(camRot);
 		}
 		if (kbd.keyDown(EADK::Keyboard::Key::Down)) {
-			camRot.y += 0.01f;
+			camRot.y += 0.1f;
 			camera.setRotation(camRot);
 		}
 		if (kbd.keyDown(EADK::Keyboard::Key::Up)) {
-			camRot.y -= 0.01f;
+			camRot.y -= 0.1f;
 			camera.setRotation(camRot);
 		}
+
+		// moving
+		if (kbd.keyDown(EADK::Keyboard::Key::Four)) {
+			camPos.x -= 0.1f;
+			camera.setPosition(camPos);
+		}
+		if (kbd.keyDown(EADK::Keyboard::Key::Six)) {
+			camPos.x += 0.1f;
+			camera.setPosition(camPos);
+		}
+		if (kbd.keyDown(EADK::Keyboard::Key::Two)) {
+			camPos.y -= 0.1f;
+			camera.setPosition(camPos);
+		}
+		if (kbd.keyDown(EADK::Keyboard::Key::Eight)) {
+			camPos.y += 0.1f;
+			camera.setPosition(camPos);
+		}
+
 
 		glm::vec3 p1 = glm::vec3(-1.0f, -1.0f, -1.0f);
 		glm::vec3 p2 = glm::vec3(1.0f, -1.0f, -1.0f);

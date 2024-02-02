@@ -44,10 +44,11 @@ static inline char* concatChars(const char* a, const char* b) {
 namespace Display
 {
 
-static void drawRect(uint16_t x, uint16_t y, uint16_t width, uint16_t height, Color color)
+static void drawRect(int x, int y, int width, int height, Color color)
 {
     if (x + width > Screen::Width || y + height > Screen::Height) return; // don draw outside the screen
-    eadk_rect_t rect = {x, y, width, height};
+    if (x < 0 || y < 0) return;
+    EADK::Rect rect = EADK::Rect(x, y, width, height);
     eadk_display_push_rect_uniform(rect, color);
 };
 
@@ -56,11 +57,11 @@ static void drawPoint(Point point, Color color)
     drawRect(point.x(), point.y(), 1, 1, color);
 };
 
-static void drawLine(int16_t x1, int16_t y1, int16_t x2, int16_t y2, Color color)
+static void drawLine(int x1, int y1, int x2, int y2, Color color)
 {
-    int16_t dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
-    int16_t dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
-    int16_t err = dx + dy, e2;
+    int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+    int dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+    int err = dx + dy, e2;
 
     while(true)
     {
@@ -77,25 +78,25 @@ static void drawLine(Point p1, Point p2, Color color)
     drawLine(p1.x(), p1.y(), p2.x(), p2.y(), color);
 };
 
-static void drawLine(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, Color color, uint16_t width) {
+static void drawLine(int x1, int y1, int x2, int y2, Color color, int width) {
     // but with width
-    for (uint16_t i = 0; i < width; i++) {
+    for (int i = 0; i < width; i++) {
         drawLine(x1, y1 + i, x2, y2 + i, color);
     }
 };
 
-static void drawCircle(uint16_t x, uint16_t y, uint16_t radius, Color color, bool fill = false) {
+static void drawCircle(int x, int y, int radius, Color color, bool fill = false) {
     // https://stackoverflow.com/questions/1201200/fast-algorithm-for-drawing-filled-circles
     if (fill) {
-        for (uint16_t i = 0; i < radius; i++) {
+        for (int i = 0; i < radius; i++) {
             drawCircle(x, y, radius - i, color);
         }
     } else {
-        int16_t f = 1 - radius;
-        int16_t ddF_x = 1;
-        int16_t ddF_y = -2 * radius;
-        int16_t x1 = 0;
-        int16_t y1 = radius;
+        int f = 1 - radius;
+        int ddF_x = 1;
+        int ddF_y = -2 * radius;
+        int x1 = 0;
+        int y1 = radius;
 
         drawRect(x, y + radius, 1, 1, color);
         drawRect(x, y - radius, 1, 1, color);
@@ -126,7 +127,7 @@ static void drawCircle(uint16_t x, uint16_t y, uint16_t radius, Color color, boo
     }
 };
 
-static void drawTriangle(uint16_t x, uint16_t y, uint16_t angle, uint16_t size, Color color, bool fill = false) {
+static void drawTriangle(int x, int y, int angle, int size, Color color, bool fill = false) {
     // angle is in degrees
     // todo
     float angleRad = angle * 3.14 / 180.0;
@@ -147,9 +148,9 @@ static void drawTriangle(uint16_t x, uint16_t y, uint16_t angle, uint16_t size, 
     }
 };
 
-static void drawTriangle(uint16_t x, uint16_t y, uint16_t angle, uint16_t size, Color color, uint16_t width) {
+static void drawTriangle(int x, int y, int angle, int size, Color color, int width) {
     // but with width
-    for (uint16_t i = 0; i < width; i++) {
+    for (int i = 0; i < width; i++) {
         drawTriangle(x, y, angle, size + i, color);
     }
 };
@@ -159,7 +160,7 @@ static void clear(Color color)
     drawRect(0, 0, Screen::Width, Screen::Height, color);
 };
 
-static void drawLetter(uint16_t x, uint16_t y, char letter, Color color, uint16_t size = 1) {
+static void drawLetter(int x, int y, char letter, Color color, int size = 1) {
     // most amazing switch ever
     switch (letter) {
         case '1':
@@ -374,8 +375,8 @@ static void drawLetter(uint16_t x, uint16_t y, char letter, Color color, uint16_
     }
 };
 
-static void adjustCoordsString(uint16_t x, uint16_t y, uint16_t spacing, const char* string, uint16_t* xOut, uint16_t* yOut) {
-    uint16_t i = 0;
+static void adjustCoordsString(int x, int y, int spacing, const char* string, int* xOut, int* yOut) {
+    int i = 0;
     while (string[i] != '\0') {
         i++;
     }
@@ -383,21 +384,21 @@ static void adjustCoordsString(uint16_t x, uint16_t y, uint16_t spacing, const c
     *yOut = y - 5;
 };
 
-static void drawString(uint16_t x, uint16_t y, uint16_t spacing, const char* string, Color color, uint16_t size = 1) {
-    uint16_t i = 0;
+static void drawString(int x, int y, int spacing, const char* string, Color color, int size = 1) {
+    int i = 0;
     while (string[i] != '\0') {
         drawLetter(x + i * (10 + spacing), y, string[i], color, size);
         i++;
     }
 };
 
-static void drawString(uint16_t x, uint16_t y, uint16_t spacing, const char* string, Color color, Color backGroundColor, uint16_t size = 1, int padding = 2, bool adjustCoords = true) {
+static void drawString(int x, int y, int spacing, const char* string, Color color, Color backGroundColor, int size = 1, int padding = 2, bool adjustCoords = true) {
     // adjust coords
-    uint16_t xOut = x;
-    uint16_t yOut = y;
+    int xOut = x;
+    int yOut = y;
     if (adjustCoords) adjustCoordsString(x, y, spacing, string, &xOut, &yOut);
 
-    uint16_t i = 0;
+    int i = 0;
     while (string[i] != '\0') {
         i++;
     }

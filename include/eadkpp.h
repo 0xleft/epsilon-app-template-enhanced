@@ -20,31 +20,34 @@ class Point {
 public:
   constexpr Point(int x, int y) :
     m_x(x), m_y(y) {}
-  uint16_t x() const { return m_x; }
-  uint16_t y() const { return m_y; }
-  constexpr operator eadk_point_t() const { return *reinterpret_cast<const eadk_point_t *>(this); }
+  int x() const { return m_x; }
+  int y() const { return m_y; }
 private:
-  uint16_t m_x;
-  uint16_t m_y;
+  int m_x;
+  int m_y;
 };
-static_assert(sizeof(EADK::Point) == sizeof(eadk_point_t), "EADK::Point should match eadk_point_t");
 
 class Rect {
 public:
   constexpr Rect(int x, int y, int width, int height) :
     m_x(x), m_y(y), m_width(width), m_height(height) {}
-  uint16_t x() const { return m_x; }
-  uint16_t y() const { return m_y; }
-  uint16_t width() const { return m_width; }
-  uint16_t height() const { return m_height; }
-  constexpr operator eadk_rect_t() const { return *reinterpret_cast<const eadk_rect_t *>(this); }
+  int x() const { return m_x; }
+  int y() const { return m_y; }
+  int width() const { return m_width; }
+  int height() const { return m_height; }
+  operator eadk_rect_t() {
+    uint16_t x = m_x;
+    uint16_t y = m_y;
+    uint16_t width = m_width;
+    uint16_t height = m_height;
+    return eadk_rect_t{x, y, width, height};
+  }
 private:
-  uint16_t m_x;
-  uint16_t m_y;
-  uint16_t m_width;
-  uint16_t m_height;
+  int m_x;
+  int m_y;
+  int m_width;
+  int m_height;
 };
-static_assert(sizeof(EADK::Rect) == sizeof(eadk_rect_t), "EADK::Rect should match eadk_rect_t");
 
 namespace Screen {
   constexpr uint16_t Width = EADK_SCREEN_WIDTH;
@@ -61,9 +64,9 @@ static inline void pushRect(Rect rect, const Color * pixels) {
 static inline void pushRectUniform(Rect rect, Color color) {
   eadk_display_push_rect_uniform(rect, color);
 }
-static inline void drawString(const char * text, Point point, bool largeFont, Color textColor, Color backgroundColor) {
-  eadk_display_draw_string(text, point, largeFont, textColor, backgroundColor);
-}
+// static inline void drawString(const char * text, Point point, bool largeFont, Color textColor, Color backgroundColor) {
+//   eadk_display_draw_string(text, point, largeFont, textColor, backgroundColor);
+// }
 
 }
 
