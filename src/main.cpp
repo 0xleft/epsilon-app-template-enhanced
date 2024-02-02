@@ -21,10 +21,42 @@ int main(int argc, char * argv[]) {
 	camera.setPosition(camPos);
 	camera.setRotation(camRot);
 
+	// points
+	std::vector<glm::vec3> points = {
+		glm::vec3(-0.5f, -0.5f, -0.5f),
+		glm::vec3(0.5f, -0.5f, -0.5f),
+		glm::vec3(0.5f, 0.5f, -0.5f),
+		glm::vec3(-0.5f, 0.5f, -0.5f),
+		glm::vec3(-0.5f, -0.5f, 0.5f),
+		glm::vec3(0.5f, -0.5f, 0.5f),
+		glm::vec3(0.5f, 0.5f, 0.5f),
+		glm::vec3(-0.5f, 0.5f, 0.5f)
+	};
+
+	// indeces
+	std::vector<glm::uvec3> indeces = {
+		glm::uvec3(0, 1, 2),
+		glm::uvec3(2, 3, 0),
+		glm::uvec3(4, 5, 6),
+		glm::uvec3(6, 7, 4),
+		glm::uvec3(0, 4, 7),
+		glm::uvec3(7, 3, 0),
+		glm::uvec3(1, 5, 6),
+		glm::uvec3(6, 2, 1),
+		glm::uvec3(0, 1, 5),
+		glm::uvec3(5, 4, 0),
+		glm::uvec3(3, 2, 6),
+		glm::uvec3(6, 7, 3)
+	};
+
 	float time = 0.0f;
 	while (true) {
 		EADK::Display::clear(Black);
 		time += 0.01f;
+
+		// char* timeString = EADK::Utils::numberToString(time);
+		// EADK::Display::drawString(10, 10, 0, timeString, White, Black, 1, 2, false);
+		// delete timeString;
 
 		EADK::Keyboard::State kbd = EADK::Keyboard::scan();
 		if (kbd.keyDown(EADK::Keyboard::Key::Right)) {
@@ -62,31 +94,8 @@ int main(int argc, char * argv[]) {
 			camera.setPosition(camPos);
 		}
 
-
-		glm::vec3 p1 = glm::vec3(-1.0f, -1.0f, -1.0f);
-		glm::vec3 p2 = glm::vec3(1.0f, -1.0f, -1.0f);
-		glm::vec3 p3 = glm::vec3(1.0f, 1.0f, -1.0f);
-		glm::vec3 p4 = glm::vec3(-1.0f, 1.0f, -1.0f);
-		glm::vec3 p5 = glm::vec3(-1.0f, -1.0f, 1.0f);
-		glm::vec3 p6 = glm::vec3(1.0f, -1.0f, 1.0f);
-		glm::vec3 p7 = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 p8 = glm::vec3(-1.0f, 1.0f, 1.0f);
-
-		EADK::Display::drawLine(camera.project(p1), camera.project(p2), White);
-		EADK::Display::drawLine(camera.project(p2), camera.project(p3), White);
-		EADK::Display::drawLine(camera.project(p3), camera.project(p4), White);
-		EADK::Display::drawLine(camera.project(p4), camera.project(p1), White);
+		camera.render(points, indeces, White);
 		
-		EADK::Display::drawLine(camera.project(p5), camera.project(p6), White);
-		EADK::Display::drawLine(camera.project(p6), camera.project(p7), White);
-		EADK::Display::drawLine(camera.project(p7), camera.project(p8), White);
-		EADK::Display::drawLine(camera.project(p8), camera.project(p5), White);
-
-		EADK::Display::drawLine(camera.project(p1), camera.project(p5), White);
-		EADK::Display::drawLine(camera.project(p2), camera.project(p6), White);
-		EADK::Display::drawLine(camera.project(p3), camera.project(p7), White);
-		EADK::Display::drawLine(camera.project(p4), camera.project(p8), White);
-
 		EADK::Timing::msleep(10);
 	}
 	
