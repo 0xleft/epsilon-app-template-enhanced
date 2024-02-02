@@ -29,20 +29,6 @@ private:
 };
 static_assert(sizeof(EADK::Point) == sizeof(eadk_point_t), "EADK::Point should match eadk_point_t");
 
-class PointS {
-  public:
-  constexpr PointS(float x, float y) :
-    m_x(x), m_y(y) {}
-  float x() const { return m_x; }
-  float y() const { return m_y; }
-  constexpr operator eadk_point_t() const { return *reinterpret_cast<const eadk_point_t *>(this); }
-private:
-  float m_x;
-  float m_y;
-};
-static_assert(sizeof(EADK::PointS) == sizeof(eadk_point_t), "EADK::Point should match eadk_point_t");
-}
-
 class Rect {
 public:
   constexpr Rect(int x, int y, int width, int height) :
