@@ -54,9 +54,7 @@ int main(int argc, char * argv[]) {
 		EADK::Display::clear(Black);
 		time += 0.01f;
 
-		// char* timeString = EADK::Utils::numberToString(time);
-		// EADK::Display::drawString(10, 10, 0, timeString, White, Black, 1, 2, false);
-		// delete timeString;
+		EADK::Display::drawString(10, 10, 3, "HALLO", White, Black, 1, 2, false);
 
 		EADK::Keyboard::State kbd = EADK::Keyboard::scan();
 		if (kbd.keyDown(EADK::Keyboard::Key::Right)) {

@@ -229,8 +229,8 @@ static void drawLetter(int x, int y, char letter, Color color, int size = 1) {
             drawLine(x + 10, y + 10, x, y + 10, color, size);
             break;
         case 'A':
-            drawLine(x, y, x + 5, y + 10, color, size);
-            drawLine(x + 5, y + 10, x + 10, y, color, size);
+            drawLine(x, y + 10, x + 5, y, color, size);
+            drawLine(x + 5, y, x + 10, y + 10, color, size);
             drawLine(x + 2, y + 5, x + 8, y + 5, color, size);
             break;
         case 'B':
