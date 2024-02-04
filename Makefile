@@ -12,6 +12,8 @@ endef
 
 src = $(addprefix src/,\
   main.cpp \
+  windows.cpp \
+  game.cpp \
 )
 
 CPPFLAGS = -std=c++11 -fno-exceptions -Wunused-function
