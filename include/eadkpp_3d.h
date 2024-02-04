@@ -8,8 +8,6 @@
 namespace EADK {
 namespace Graphics {
 
-
-
 class Camera {
 private:
     glm::mat4 projectionMatrix;
@@ -30,12 +28,20 @@ public:
     }
 
     void setPosition(const glm::vec3& position) {
-        viewMatrix = glm::lookAt(position, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 rotMatrix = glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+        rotMatrix = glm::rotate(rotMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+        rotMatrix = glm::rotate(rotMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        viewMatrix = rotMatrix * glm::translate(glm::mat4(1.0f), -position);
         this->position = position;
     }
 
     void setRotation(const glm::vec3& rotation) {
-        viewMatrix = glm::lookAt(position, rotation, glm::vec3(0.0f, 1.0f, 0.0f));
+        glm::mat4 rotMatrix = glm::rotate(glm::mat4(1.0f), rotation.x, glm::vec3(1.0f, 0.0f, 0.0f)); // Rotate around x-axis
+        rotMatrix = glm::rotate(rotMatrix, rotation.y, glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate around y-axis
+        rotMatrix = glm::rotate(rotMatrix, rotation.z, glm::vec3(0.0f, 0.0f, 1.0f)); // Rotate around z-axis
+
+        viewMatrix = rotMatrix * glm::translate(glm::mat4(1.0f), -position);
         this->rotation = rotation;
     }
 
@@ -56,36 +62,59 @@ public:
         return Point(screenPos.x * Screen::Width, screenPos.y * Screen::Height);
     }
 
+    Point project(const glm::vec3& worldPos, const glm::mat4& modelMatrix) {
+        glm::vec4 clipSpacePos = projectionMatrix * viewMatrix * modelMatrix * glm::vec4(worldPos, 1.0);
+        glm::vec3 ndcPos = glm::vec3(clipSpacePos) / clipSpacePos.w;
+        glm::vec2 screenPos = glm::vec2(ndcPos.x, ndcPos.y);
+        return Point(screenPos.x * Screen::Width, screenPos.y * Screen::Height);
+    }
+
     std::vector<Point> project(const std::vector<glm::vec3>& worldPos) {
         std::vector<Point> screenPos;
-        for (const auto& pos : worldPos) {
+        for (glm::vec3 pos : worldPos) {
             screenPos.push_back(project(pos));
         }
         return screenPos;
     }
 
-    glm::vec3 unproject(const Point& screenPos, float depth) {
-        glm::vec2 ndcPos = glm::vec2(screenPos.x() / Screen::Width, screenPos.y() / Screen::Height);
-        glm::vec4 clipSpacePos = glm::vec4(ndcPos.x, ndcPos.y, depth, 1.0);
-        glm::vec4 eyeSpacePos = glm::inverse(projectionMatrix) * clipSpacePos;
-        glm::vec3 worldPos = glm::vec3(glm::inverse(viewMatrix) * eyeSpacePos);
-        return worldPos;
-    }
-
-    std::vector<glm::vec3> unproject(const std::vector<Point>& screenPos, float depth) {
-        std::vector<glm::vec3> worldPos;
-        for (const auto& pos : screenPos) {
-            worldPos.push_back(unproject(pos, depth));
+    std::vector<Point> project(const std::vector<glm::vec3>& worldPos, const glm::mat4& modelMatrix) {
+        std::vector<Point> screenPos;
+        for (glm::vec3 pos : worldPos) {
+            screenPos.push_back(project(pos, modelMatrix));
         }
-        return worldPos;
+        return screenPos;
     }
 
     void render(std::vector<glm::vec3> vertices, std::vector<glm::uvec3> indices, Color color) {
         std::vector<Point> screenPos = project(vertices);
-        for (const auto& index : indices) {
+        for (glm::uvec3 index : indices) {
             Display::drawLine(screenPos[index.x], screenPos[index.y], color);
             Display::drawLine(screenPos[index.y], screenPos[index.z], color);
             Display::drawLine(screenPos[index.z], screenPos[index.x], color);
+        }
+    }
+
+    void render(std::vector<glm::vec3> vertices, std::vector<glm::uvec3> indices, const glm::mat4& modelMatrix, Color color) {
+        std::vector<Point> screenPos = project(vertices, modelMatrix);
+        for (glm::uvec3 index : indices) {
+            Display::drawLine(screenPos[index.x], screenPos[index.y], color);
+            Display::drawLine(screenPos[index.y], screenPos[index.z], color);
+            Display::drawLine(screenPos[index.z], screenPos[index.x], color);
+        }
+    }
+
+    // since render is not working fine for now
+    void pointRender(std::vector<glm::vec3> vertices, Color color) {
+        std::vector<Point> points = project(vertices);
+        for (Point point : points) {
+            Display::drawPoint(point, color);
+        }
+    }
+
+    void pointRender(std::vector<glm::vec3> vertices, const glm::mat4& modelMatrix, Color color) {
+        std::vector<Point> points = project(vertices, modelMatrix);
+        for (Point point : points) {
+            Display::drawPoint(point, color);
         }
     }
 };

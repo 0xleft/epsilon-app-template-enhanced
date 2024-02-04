@@ -75,6 +75,8 @@ static void drawLine(int x1, int y1, int x2, int y2, Color color)
 
 static void drawLine(Point p1, Point p2, Color color)
 {
+    // if both points are outside the screen, don draw
+    if ((p1.x() < 0 || p1.x() > Screen::Width || p1.y() < 0 || p1.y() > Screen::Height) && (p2.x() < 0 || p2.x() > Screen::Width || p2.y() < 0 || p2.y() > Screen::Height)) return;
     drawLine(p1.x(), p1.y(), p2.x(), p2.y(), color);
 };
 
