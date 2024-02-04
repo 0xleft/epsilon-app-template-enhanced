@@ -14,9 +14,9 @@ src = $(addprefix src/,\
   main.cpp \
 )
 
-CPPFLAGS = -std=c++11 -fno-exceptions
+CPPFLAGS = -std=c++11 -fno-exceptions -Wunused-function
 CPPFLAGS += -Os # choose O2 or O3 for better performance in exchange for larger binary
-CPPFLAGS += -Wall -Iinclude
+CPPFLAGS += -Wall -Iinclude -Isrc
 CPPFLAGS += $(shell $(NWLINK) eadk-cflags)
 LDFLAGS = -Wl,--relocatable
 LDFLAGS += -nostartfiles
