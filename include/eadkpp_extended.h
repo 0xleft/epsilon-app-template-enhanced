@@ -374,6 +374,14 @@ static void drawLetter(int x, int y, char letter, Color color, int size = 1) {
             break;
         case ' ':
             break;
+        case '>':
+            drawLine(x, y, x + 10, y + 5, color, size);
+            drawLine(x + 10, y + 5, x, y + 10, color, size);
+            break;
+        case '<':
+            drawLine(x, y + 5, x + 10, y, color, size);
+            drawLine(x + 10, y, x, y + 10, color, size);
+            break;
     }
 };
 
